@@ -1,0 +1,17 @@
+Add genre
+Find all genres
+Delete genre
+
+Add new list
+Delete list
+Update list
+Find user lists
+find list
+
+create user
+update user
+get user
+login
+logout
+delete user
+

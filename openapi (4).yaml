@@ -1,0 +1,716 @@
+openapi: 3.0.1
+info:
+  title: Book Handler
+  description: 'This is a BookHandler server. BookHandler is a platform for sharing and reading books and graphical novels that can be described as online library. This application should be especially useful for book enthusiasts that are looking for rare prints, not available in internet bookstores and on general auction sites and people interested in expanding their personal collections.'
+  contact:
+    email: 212829@student.pwr.edu.pl
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+tags:
+- name: publication
+  description: Every book and graphical novel
+- name: publicationList
+  description: Collections of publications created by users
+- name: user
+  description: Operations about user
+- name: genre
+  description: Categories of publications
+paths:
+  /publication:
+    put:
+      tags:
+      - publication
+      summary: Update an existing publication
+      operationId: updatePublication
+      parameters:
+      - name: user
+        in: header
+        description: User info to check modification rights
+        required: true
+        explode: true
+        schema:
+            $ref: '#/components/schemas/User'
+      requestBody:
+        description: Publication object that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Publication'
+        required: true
+      responses:
+        204:
+          description: Successfully updated publication object
+        404:
+          description: Publication not found
+          content: {}
+        403:
+          description: User does not have the rights to alter this publication
+          content: {}
+      x-codegen-request-body-name: body
+    post:
+      tags:
+      - publication
+      summary: Add a new publication to the service
+      operationId: addPublication
+      requestBody:
+        description: Publication object that needs to be added to the service
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Publication'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publication'
+      x-codegen-request-body-name: body
+  /publication/findByGenre:
+    get:
+      tags:
+      - publication
+      summary: Find publications by genre
+      description: Multiple genre values can be provided with comma separated strings
+      operationId: findPublicationsByGenre
+      parameters:
+      - name: genre
+        in: query
+        description: Genre values that need to be considered for filter
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
+        400:
+          description: Invalid genre value
+          content: {}
+  /publication/findByAuthor:
+    get:
+      tags:
+      - publication
+      summary: Find publications by author's name
+      description: Muliple authors names can be provided with comma separated strings. 
+      operationId: findPublicationsByAuthor
+      parameters:
+      - name: authors
+        in: query
+        description: Authors to filter by
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
+  /publication/findByReleaseYear:
+    get:
+      tags:
+      - publication
+      summary: Find publications by release year
+      description: Muliple years integers can be provided with comma separated integers. 
+      operationId: findPublicationsByYear
+      parameters:
+      - name: years
+        in: query
+        description: Years to filter by
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int32
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publication'
+  /publication/{publicationId}:
+    get:
+      tags:
+      - publication
+      summary: Find publication by ID
+      description: Returns a single publication
+      operationId: getPublicationById
+      parameters:
+      - name: publicationId
+        in: path
+        description: ID of publication to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publication'
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Publication not found
+          content: {}
+    delete:
+      tags:
+      - publication
+      summary: Delete a publication
+      operationId: deletePublication
+      parameters:
+      - name: user
+        in: cookie
+        schema:
+          $ref: '#/components/schemas/User'
+      - name: publicationId
+        in: path
+        description: Publication id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Publication not found
+          content: {}
+        403:
+          description: User does not have the rights to delete this publication
+          content: {}
+    put:
+      tags:
+      - publication
+      summary: Update rating of an existing publication
+      operationId: updatePublicationRating
+      parameters:
+      - name: publicationId
+        in: path
+        description: ID of publication to rate
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        description: Publication rating
+        content:
+          application/json:
+            schema:
+              type: integer
+              format: int32
+        required: true
+      responses:
+        204:
+          description: Successfully updated publication object
+        400:
+          description: Invalid ID supplied
+          content: {}
+        404:
+          description: Publication not found
+          content: {}
+        403:
+          description: User does not have the rights to alter this publication
+          content: {}
+      x-codegen-request-body-name: body
+  
+  /publicationList:
+    put:
+      tags:
+      - publicationList
+      summary: Update an existing publication list
+      operationId: updatePublicationList
+      parameters:
+      - name: user
+        in: cookie
+        description: User info to check modification rights
+        required: true
+        style: form
+        explode: true
+        schema:
+            $ref: '#/components/schemas/User'
+      requestBody:
+        description: PublicationList object that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicationList'
+        required: true
+      responses:
+        200:
+          description: Successfully updated publicationList object
+          content: {}
+        404:
+          description: Publication list not found
+          content: {}
+        403:
+          description: User does not have the rights to alter this publication
+          content: {}
+      x-codegen-request-body-name: body
+    post:
+      tags:
+      - publicationList
+      summary: Add a new publication list
+      operationId: addPublicationList
+      requestBody:
+        description: PublicationList object that needs to be added to the service
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicationList'
+        required: true
+      responses:
+        200:
+          description: Successfuly added new publicationList object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationList'
+      x-codegen-request-body-name: body
+  /publicationList/{publicationListId}:
+    get:
+      tags:
+      - publicationList
+      summary: Find publication list by ID
+      description: Returns a single publication
+      operationId: getPublicationListById
+      parameters:
+      - name: publicationListId
+        in: path
+        description: ID of publication list to return
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationList'
+        404:
+          description: Publication not found
+          content: {}
+    delete:
+      tags:
+      - publicationList
+      summary: Delete a publication list
+      operationId: deletePublicationList
+      parameters:
+      - name: user
+        in: cookie
+        schema:
+          $ref: '#/components/schemas/User'
+      - name: publicationListId
+        in: path
+        description: Publication list id to delete
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        404:
+          description: Publication list not found
+          content: {}
+        403:
+          description: User does not have the rights to delete this publication list
+          content: {}
+  /publicationList/findByUserId:
+    get:
+      tags:
+      - publicationList
+      summary: Find publication lists by user Id
+      operationId: findPublicationsListByUserId
+      parameters:
+      - name: userId
+        in: query
+        description: User id to filter by
+        required: true
+        style: form
+        explode: true
+        schema:
+            type: integer
+            format: int64
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PublicationList'
+        404:
+          description: User not found
+          content: {}
+  
+  /user:
+    post:
+      tags:
+      - user
+      summary: Create user
+      description: Service's visitor can create User account 
+      operationId: createUser
+      requestBody:
+        description: Creates user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content: {}
+        409:
+          description: username already taken
+          content: {}
+      x-codegen-request-body-name: body
+  /user/login:
+    get:
+      tags:
+      - user
+      summary: Log user into the system
+      operationId: loginUser
+      parameters:
+      - name: username
+        in: query
+        description: The username for login
+        required: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        description: The password for login in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: string
+        400:
+          description: Invalid username/password supplied
+          content: {}
+  /user/logout:
+    get:
+      tags:
+      - user
+      summary: Log out current logged in user
+      operationId: logoutUser
+      responses:
+        default:
+          description: successful operation
+          content: {}
+  /user/{username}:
+    get:
+      tags:
+      - user
+      summary: Get user by user name
+      operationId: getUserByName
+      parameters:
+      - name: username
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: User not found
+          content: {}
+    put:
+      tags:
+      - user
+      summary: Update user
+      description: This can only be done by the admin or logged in owner of updated user account.
+      operationId: updateUser
+      parameters:
+      - name: username
+        in: path
+        description: Name that needs to be updated
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Updated user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        404:
+          description: User not found
+          content: {}
+        403:
+          description: User does not have the rights to update this account
+          content: {}
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - user
+      summary: Delete user
+      description: This can only be done by the admin or logged in owner of user account.
+      operationId: deleteUser
+      parameters:
+      - name: username
+        in: path
+        description: The name that needs to be deleted
+        required: true
+        schema:
+          type: string
+      - name: role
+        in: cookie
+        description: The user role
+        required: true
+        schema:
+          type: string
+          enum: 
+            - admin
+            - member
+      responses:
+        404:
+          description: User not found
+          content: {}
+        403:
+          description: User does not have the rights to delete account
+          content: {}
+          
+  /genre:
+    post:
+      tags:
+      - genre
+      summary: Add new genre to the genre list
+      operationId: addGenre
+      parameters:
+      - name: user
+        in: cookie
+        description: User info to check genre addition rights
+        required: true
+        style: form
+        explode: true
+        schema:
+            $ref: '#/components/schemas/User'
+      requestBody:
+        description: Genre object that needs to be added to the genre list
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublicationList'
+        required: true
+      responses:
+        200:
+          description: Successfuly added new Genre object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicationList'
+        409:
+          description: Genre name already taken
+          content: {}
+      x-codegen-request-body-name: body
+  /genre/findAll:
+    get:
+      tags:
+      - genre
+      summary: Find all genres
+      operationId: findAllGenres
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Genre'
+  /genre/{genreName}:
+    put:
+      tags:
+      - genre
+      summary: Update genre name
+      operationId: updateGenre
+      parameters:
+      - name: user
+        in: cookie
+        description: User info to check modification rights
+        required: true
+        style: form
+        explode: true
+        schema:
+            $ref: '#/components/schemas/User'
+      - name: genreName
+        in: path
+        description: Name of the genre to update
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: Genre object that needs to be updated
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Genre'
+        required: true
+      responses:
+        200:
+          description: Successfully updated Genre object
+          content: {}
+        404:
+          description: Genre not found
+          content: {}
+        403:
+          description: User does not have the rights to modify Genre objects
+          content: {}
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - genre
+      summary: Delete genre
+      operationId: deleteGenre
+      parameters:
+      - name: user
+        description: User info to check genre deletion rights
+        in: cookie
+        schema:
+          $ref: '#/components/schemas/User'
+      - name: genreName
+        in: path
+        description: Name of the genre to delete
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Successfully deleted Genre object
+          content: {}
+        404:
+          description: Genre not found
+          content: {}
+        403:
+          description: User does not have the rights to delete genre
+          content: {}
+components:
+  schemas:
+    Publication:
+      required:
+      - title
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        author:
+          type: string
+        releaseYear:
+          type: integer
+          format: int32
+        genre:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Genre'
+        dateAdded:
+          type: string
+          format: date-time
+        rating:
+          type: number
+          format: float
+        photoUrls:
+          type: array
+          xml:
+            name: photoUrl
+            wrapped: true
+          items:
+            type: string
+        addedBy:
+          $ref: '#/components/schemas/User'
+    Genre:
+      type: object
+      properties:
+        name:
+          type: string
+    User:
+      required:
+      - username
+      - email
+      - password
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        userRole:
+          type: string
+          description: User Status
+          enum: 
+            - admin
+            - member
+        dateAdded:
+          type: string
+          format: date-time
+        
+    PublicationList:
+      required:
+      - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        createdBy:
+          $ref: '#/components/schemas/User'
+        publications:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Publication'
+        dateAdded:
+          type: string
+          format: date-time
+    

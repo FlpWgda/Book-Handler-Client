@@ -1,0 +1,17 @@
+Deliver as open API description.
+
+web sniffer
+
+Description should be like
+
+Mozilla http overview
+
+
+adjust pet service to your needs
+
+Spring tool suite
+
+Convert to api 3.0.1.
+
+
+rating is put method
