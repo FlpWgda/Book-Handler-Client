@@ -1,0 +1,32 @@
+.content {
+  padding: 16px;
+  margin: 60px;
+}
+
+.content > mat-card {
+  width: 80px;
+}
+
+.title{
+  justify-content: center;
+}
+
+mat-toolbar{
+  display: flex;
+  z-index: 10000;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+}
+
+mat-card-title{
+  font-size: x-small
+}
+
+mat-card{
+  min-height: 150px;
+  overflow: hidden;
+}
+.example-spacer {
+  flex: 1 1 auto;
+}

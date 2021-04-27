@@ -1,4 +1,0 @@
-Book handler - sharing the books, cartoons and reading
-
-User interfaces
-

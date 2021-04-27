@@ -1,3 +1,0 @@
-DBeaver
-
-Angular js or Angular

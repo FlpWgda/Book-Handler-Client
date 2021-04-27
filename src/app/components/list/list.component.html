@@ -1,0 +1,31 @@
+<mat-toolbar color="primary">
+  <span class="title"> My Publications</span> <span class="example-spacer"></span>
+    <button (click)='openDialog()'  align="center" mat-raised-button color="basic">Add new publication</button>
+</mat-toolbar>
+<div class="content">
+  <div fxLayout="row wrap"
+       fxLayoutAlign ="start stretch" fxLayoutGap="16px grid">
+    <div fxFlex="20%" *ngFor="let publication of publications">
+      <mat-card class="mat-elevation-z4">
+        <mat-card-header align="center">
+          <mat-card-title >{{publication.title}}</mat-card-title>
+        </mat-card-header>
+        <img mat-card-image src="{{publication.photoUrls}}">
+        <mat-card-content>
+          <p>
+            Author: {{publication.author}}
+          </p>
+          <p>
+            Release year: {{publication.releaseYear}}
+          </p>
+        </mat-card-content>
+        <mat-card-actions align="center">
+          <button (click)='openDialog(publication.id)' mat-raised-button color="accent">Modify</button>
+          <button (click)='delete(publication.id)' mat-raised-button color="warn">Delete</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+
